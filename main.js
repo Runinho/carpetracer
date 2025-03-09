@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import racetrackUrl from './assets/racetrack.png'
 
 // setup scene and objects
 const scene = new THREE.Scene();
@@ -30,7 +31,7 @@ scene.add( cube );
 const planeGeometry = new THREE.PlaneGeometry(150*1.5, 100*1.5); // 20x20 units
 const textureLoader = new THREE.TextureLoader();
 const planeMaterial = new THREE.MeshPhongMaterial({
-  map: textureLoader.load('/assets/racetrack.png'),
+  map: textureLoader.load(racetrackUrl),
   side: THREE.DoubleSide
 });
 const plane = new THREE.Mesh(planeGeometry, planeMaterial);

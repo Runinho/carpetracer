@@ -95,16 +95,30 @@ const carPhysics = new OneTrackCar();
 var key_map = {87: false, 65: false, 83:false, 68: false};
 
 // game loop
+
+let frames = 0, prevTime = performance.now();
 function animate() {
+  // FPS
+
+  frames ++;
+  const time = performance.now();
+
+  if ( time >= prevTime + 1000 ) {
+
+    console.log( Math.round( ( frames * 1000 ) / ( time - prevTime ) ) );
+
+    frames = 0;
+    prevTime = time;
+
+  }
+
   renderer.render( scene, camera );
 
   for (var key in key_map) {
     if (key_map[key]) {
-      console.log(key, key_map[key]);
       switch (key) {
         case "87": // W
           speed -= 0.01;
-          console.log("power!")
           break;
         case "65": // A
           steering += 0.001;
@@ -122,7 +136,7 @@ function animate() {
   steering = Math.max(steering, -0.02)
   steering = Math.min(steering, 0.02)
 
-  speed *= 0.98 * (1 - Math.abs(steering))
+  speed *= 0.999 * (1 - Math.abs(steering ))
   car.rotation.y += steering;
   left_wheel.rotation.y = steering*25;
   right_wheel.rotation.y = steering*25;

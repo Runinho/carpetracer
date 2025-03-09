@@ -136,7 +136,7 @@ function animate() {
   steering = Math.max(steering, -0.02)
   steering = Math.min(steering, 0.02)
 
-  speed *= 0.999 * (1 - Math.abs(steering ))
+  speed *= 0.98 * (1 - Math.abs(steering ))
   car.rotation.y += steering;
   left_wheel.rotation.y = steering*25;
   right_wheel.rotation.y = steering*25;

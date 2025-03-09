@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import racetrackUrl from './assets/racetrack.png'
 import carUrl from './assets/car.glb'
+import environmentUrl from './assets/enviroment_carpetracer.glb'
+import OneTrackCar from "./onetrackmodel";
 
 // setup scene and objects
 const scene = new THREE.Scene();
@@ -60,7 +62,7 @@ const left_wheel = createWheel(0.9)
 const right_wheel = createWheel(-0.9)
 
 
-// ground plane
+// // ground plane
 // Create checkerboard texture using canvas
 const planeGeometry = new THREE.PlaneGeometry(150*1.5, 100*1.5); // 20x20 units
 const textureLoader = new THREE.TextureLoader();
@@ -73,14 +75,22 @@ plane.rotation.x = -Math.PI / 2; // Rotate to lie flat
 plane.position.y = 0; // Place below the cube
 scene.add(plane);
 
+loader.load( environmentUrl, function ( gltf ) {
+  scene.add( gltf.scene );
+}, undefined, function ( error ) {
+
+  console.error( error );
+
+} );
 // setup camera
 camera.position.z = 5;
 camera.position.y = 2;
 
 
 var steering = 0;
-var acceleration = 0;
 var speed = 0;
+
+const carPhysics = new OneTrackCar();
 
 var key_map = {87: false, 65: false, 83:false, 68: false};
 
@@ -112,7 +122,6 @@ function animate() {
   steering = Math.max(steering, -0.02)
   steering = Math.min(steering, 0.02)
 
-  speed += acceleration;
   speed *= 0.98
   car.rotation.y += steering;
   left_wheel.rotation.y = steering*25;
@@ -126,7 +135,7 @@ function animate() {
 
   // cube.rotation.y += 0.01;
   camera.position.set( car.position.x + 5 * Math.cos(-car.rotation.y + (Math.PI/2)),
-    car.position.y + 3,
+    car.position.y + 4,
     car.position.z + 5 * Math.sin(-car.rotation.y + (Math.PI/2)) );
   camera.lookAt( car.position.x, car.position.y + 1, car.position.z );
 }

@@ -107,13 +107,13 @@ function animate() {
           console.log("power!")
           break;
         case "65": // A
-          steering += 0.01;
+          steering += 0.001;
           break;
         case "83": // S
           speed += 0.01;
           break;
         case "68": // D
-          steering -= 0.01;
+          steering -= 0.001;
           break;
       }
     }
@@ -122,12 +122,12 @@ function animate() {
   steering = Math.max(steering, -0.02)
   steering = Math.min(steering, 0.02)
 
-  speed *= 0.98
+  speed *= 0.98 * (1 - Math.abs(steering))
   car.rotation.y += steering;
   left_wheel.rotation.y = steering*25;
   right_wheel.rotation.y = steering*25;
 
-  steering *= 0.9
+  steering *= 0.95
 
   // TODO: use nice vector math :D
   car.position.x += speed * Math.sin(car.rotation.y)

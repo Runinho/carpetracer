@@ -1,5 +1,7 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import racetrackUrl from './assets/racetrack.png'
+import carUrl from './assets/car.glb'
 
 // setup scene and objects
 const scene = new THREE.Scene();
@@ -16,15 +18,47 @@ scene.add(sunLight);
 
 // add car
 const car_height = 1.7;
-const geometry = new THREE.BoxGeometry( 2, car_height, 3.5 );
+const loader = new GLTFLoader();
+
+loader.load( carUrl, function ( gltf ) {
+  car.add( gltf.scene );
+
+}, undefined, function ( error ) {
+
+  console.error( error );
+
+} );
+const geometry = new THREE.BoxGeometry( 0, 0, 0 );
 const material = new THREE.MeshPhongMaterial({
   color: 0x00ff00,        // Base color (green)
   shininess: 100,         // How shiny the surface is
-  specular: 0x222222      // Color of the specular highlight
+  specular: 0x222222,      // Color of the specular highlight
+  opacity: 0.5,
+  transparent: true,
 });
-const cube = new THREE.Mesh( geometry, material );
-cube.position.y = car_height/2;
-scene.add( cube );
+const car = new THREE.Mesh( geometry, material );
+car.position.y = 0;
+scene.add( car );
+
+// Create wheels
+function createWheel(x){
+  const childGeometry = new THREE.CylinderGeometry(0.5, 0.5, 0.2);
+  const childMaterial = new THREE.MeshBasicMaterial({ color: 0x000});
+  const wheel = new THREE.Mesh(childGeometry, childMaterial);
+
+  wheel.rotation.z = Math.PI/2 - 0.05;
+  wheel.position.x = x;
+  wheel.position.z = -2.3;
+  wheel.position.y = 0.5;
+
+  // Parent the wheel to the car
+  car.add(wheel);
+  return wheel
+}
+
+const left_wheel = createWheel(0.9)
+const right_wheel = createWheel(-0.9)
+
 
 // ground plane
 // Create checkerboard texture using canvas
@@ -80,18 +114,21 @@ function animate() {
 
   speed += acceleration;
   speed *= 0.98
-  cube.rotation.y += steering;
+  car.rotation.y += steering;
+  left_wheel.rotation.y = steering*25;
+  right_wheel.rotation.y = steering*25;
+
   steering *= 0.9
 
   // TODO: use nice vector math :D
-  cube.position.x += speed * Math.sin(cube.rotation.y)
-  cube.position.z += speed * Math.cos(cube.rotation.y)
+  car.position.x += speed * Math.sin(car.rotation.y)
+  car.position.z += speed * Math.cos(car.rotation.y)
 
   // cube.rotation.y += 0.01;
-  camera.position.set( cube.position.x + 5 * Math.cos(-cube.rotation.y + (Math.PI/2)),
-    cube.position.y + 2,
-    cube.position.z + 5 * Math.sin(-cube.rotation.y + (Math.PI/2)) );
-  camera.lookAt( cube.position.x, cube.position.y, cube.position.z );
+  camera.position.set( car.position.x + 5 * Math.cos(-car.rotation.y + (Math.PI/2)),
+    car.position.y + 3,
+    car.position.z + 5 * Math.sin(-car.rotation.y + (Math.PI/2)) );
+  camera.lookAt( car.position.x, car.position.y + 1, car.position.z );
 }
 renderer.setAnimationLoop( animate );
 
